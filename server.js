@@ -1,12 +1,20 @@
 const express = require('express');
 const path = require('path');
 const hbs = require('express-handlebars');
+const multer = require('multer');
 
 const app = express();
+
+// Configure multer to hold files in memory (buffer)
+const upload = multer();
 
 // Configure template engine
 app.engine('hbs', hbs({ extname: 'hbs', layoutsDir: './views/layouts', defaultLayout: 'main' }));
 app.set('view engine', 'hbs');
+
+// Middleware for parsing forms
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Middleware for static files
 app.use(express.static(path.join(__dirname, '/public')));
@@ -30,8 +38,18 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/contact', (req, res) => {
-  // Use custom layout 'dark'
-  res.render('contact', { layout: 'dark' });
+  res.render('contact');
+});
+
+app.post('/contact/send-message', upload.single('file'), (req, res) => {
+  const { author, sender, title, message } = req.body;
+  const file = req.file;
+
+  if (author && sender && title && message && file) {
+    res.render('contact', { isSent: true, fileName: file.originalname });
+  } else {
+    res.render('contact', { isError: true });
+  }
 });
 
 app.get('/info', (req, res) => {
