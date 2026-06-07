@@ -71,16 +71,24 @@ app.get('/hello/:name', (req, res) => {
   res.render('hello', { name: req.params.name });
 });
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '/client/build')));
+
 // API Routes
 app.use('/api', testimonialsRoutes);
 app.use('/api', concertsRoutes);
 app.use('/api', seatsRoutes);
 
-// 404 handler
+// Fallback to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/client/build/index.html'));
+});
+
+// 404 handler for other methods
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found...' });
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running on port: 8000');
 });
