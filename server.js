@@ -2,6 +2,12 @@ const express = require('express');
 const path = require('path');
 const hbs = require('express-handlebars');
 const multer = require('multer');
+const cors = require('cors');
+
+// import routes
+const testimonialsRoutes = require('./routes/testimonials.routes');
+const concertsRoutes = require('./routes/concerts.routes');
+const seatsRoutes = require('./routes/seats.routes');
 
 const app = express();
 
@@ -12,7 +18,8 @@ const upload = multer();
 app.engine('hbs', hbs({ extname: 'hbs', layoutsDir: './views/layouts', defaultLayout: 'main' }));
 app.set('view engine', 'hbs');
 
-// Middleware for parsing forms
+// Middleware for parsing forms and request bodies
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -64,9 +71,14 @@ app.get('/hello/:name', (req, res) => {
   res.render('hello', { name: req.params.name });
 });
 
+// API Routes
+app.use('/api', testimonialsRoutes);
+app.use('/api', concertsRoutes);
+app.use('/api', seatsRoutes);
+
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('404');
+  res.status(404).json({ message: 'Not found...' });
 });
 
 app.listen(8000, () => {
