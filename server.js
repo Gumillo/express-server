@@ -27,51 +27,6 @@ app.use(express.json());
 // Middleware for static files
 app.use(express.static(path.join(__dirname, '/public')));
 
-// Middleware for user paths check (forbidden)
-app.use('/user', (req, res, next) => {
-  res.render('forbidden');
-});
-
-// Routes
-app.get('/', (req, res) => {
-  res.render('index');
-});
-
-app.get('/home', (req, res) => {
-  res.render('index');
-});
-
-app.get('/about', (req, res) => {
-  res.render('about');
-});
-
-app.get('/contact', (req, res) => {
-  res.render('contact');
-});
-
-app.post('/contact/send-message', upload.single('file'), (req, res) => {
-  const { author, sender, title, message } = req.body;
-  const file = req.file;
-
-  if (author && sender && title && message && file) {
-    res.render('contact', { isSent: true, fileName: file.originalname });
-  } else {
-    res.render('contact', { isError: true });
-  }
-});
-
-app.get('/info', (req, res) => {
-  res.render('info');
-});
-
-app.get('/history', (req, res) => {
-  res.render('history');
-});
-
-app.get('/hello/:name', (req, res) => {
-  res.render('hello', { name: req.params.name });
-});
-
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '/client/build')));
 
