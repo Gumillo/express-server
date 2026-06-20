@@ -3,6 +3,7 @@ const path = require('path');
 const hbs = require('express-handlebars');
 const multer = require('multer');
 const cors = require('cors');
+const socket = require('socket.io');
 
 // import routes
 const testimonialsRoutes = require('./routes/testimonials.routes');
@@ -75,9 +76,20 @@ app.get('/hello/:name', (req, res) => {
 app.use(express.static(path.join(__dirname, '/client/build')));
 
 // API Routes
-app.use('/api', testimonialsRoutes);
-app.use('/api', concertsRoutes);
-app.use('/api', seatsRoutes);
+app.use('/api', (req, res, next) => {
+  req.io = io;
+  next();
+}, testimonialsRoutes);
+
+app.use('/api', (req, res, next) => {
+  req.io = io;
+  next();
+}, concertsRoutes);
+
+app.use('/api', (req, res, next) => {
+  req.io = io;
+  next();
+}, seatsRoutes);
 
 // Fallback to React app
 app.get('*', (req, res) => {
@@ -89,6 +101,12 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Not found...' });
 });
 
-app.listen(process.env.PORT || 8000, () => {
+const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running on port: 8000');
+});
+
+const io = socket(server);
+
+io.on('connection', (socketInstance) => {
+  console.log('New socket!');
 });

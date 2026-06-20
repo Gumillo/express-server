@@ -35,6 +35,7 @@ router.route('/seats').post((req, res) => {
       email
     };
     db.seats.push(newSeat);
+    req.io.emit('seatsUpdated', db.seats);
     res.json({ message: 'OK' });
   } else {
     res.status(400).json({ message: 'Bad request. All fields are required.' });
