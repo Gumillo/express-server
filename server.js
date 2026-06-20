@@ -4,6 +4,7 @@ const hbs = require('express-handlebars');
 const multer = require('multer');
 const cors = require('cors');
 const socket = require('socket.io');
+const mongoose = require('mongoose');
 
 // import routes
 const testimonialsRoutes = require('./routes/testimonials.routes');
@@ -61,6 +62,15 @@ const server = app.listen(process.env.PORT || 8000, () => {
 });
 
 const io = socket(server);
+
+// Connect to DB
+mongoose.connect('mongodb://0.0.0.0:27017/NewWaveDB');
+const db = mongoose.connection;
+
+db.once('open', () => {
+  console.log('Connected to the database');
+});
+db.on('error', err => console.log('Error ' + err));
 
 io.on('connection', (socketInstance) => {
   console.log('New socket!');
