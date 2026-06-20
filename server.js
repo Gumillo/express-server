@@ -64,7 +64,7 @@ const server = app.listen(process.env.PORT || 8000, () => {
 const io = socket(server);
 
 // Connect to DB
-mongoose.connect('mongodb://0.0.0.0:27017/NewWaveDB');
+mongoose.connect('mongodb+srv://user1:GD43MkugeaLM7eZs@cluster0.ooqok9u.mongodb.net/NewWaveDB?retryWrites=true&w=majority&appName=Cluster0');
 const db = mongoose.connection;
 
 db.once('open', () => {
