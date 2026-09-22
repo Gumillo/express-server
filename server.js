@@ -5,6 +5,7 @@ const multer = require('multer');
 const cors = require('cors');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 // import routes
 const testimonialsRoutes = require('./routes/testimonials.routes');
@@ -12,6 +13,8 @@ const concertsRoutes = require('./routes/concerts.routes');
 const seatsRoutes = require('./routes/seats.routes');
 
 const app = express();
+
+app.use(helmet());
 
 // Configure multer to hold files in memory (buffer)
 const upload = multer();
@@ -64,7 +67,9 @@ const server = app.listen(process.env.PORT || 8000, () => {
 const io = socket(server);
 
 // Connect to DB
-mongoose.connect('mongodb+srv://user1:GD43MkugeaLM7eZs@cluster0.ooqok9u.mongodb.net/NewWaveDB?retryWrites=true&w=majority&appName=Cluster0');
+const dbURI = process.env.DB_URL || `mongodb+srv://user1:${process.env.DB_PASS || 'GD43MkugeaLM7eZs'}@cluster0.ooqok9u.mongodb.net/NewWaveDB?retryWrites=true&w=majority&appName=Cluster0`;
+
+mongoose.connect(dbURI);
 const db = mongoose.connection;
 
 db.once('open', () => {
